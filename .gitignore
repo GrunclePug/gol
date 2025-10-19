@@ -1,0 +1,15 @@
+# Ignore all object files (.o)
+*.o
+
+# Ignore tarball
+*.tar.gz
+
+# Ignore final executable
+gol
+
+# Ignore config.h, as it is generated from config.def.h and is user-specific
+config.h
+
+# Ignore operating system-specific files
+.DS_Store
+Icon?

@@ -1,0 +1,36 @@
+.TH GOL 1 gol\-VERSION
+.SH NAME
+gol \- Conway's Game of Life TUI simulator
+.SH SYNOPSIS
+.B gol
+.RB [ \fIdensity\fR ]
+.SH DESCRIPTION
+.B gol
+is a simple, fast, and terminal\-based implementation of Conway's Game of Life.
+It uses the ncurses library to display the cellular automaton grid and runs the
+simulation logic in an infinite loop until explicitly quit.
+.P
+The program displays the grid of cells, the current generation count, and the
+simulation state (RUNNING or PAUSED) in a status bar at the bottom of the terminal.
+.SH ARGUMENTS
+.TP
+\fIdensity\fR
+An optional argument that sets the initial density of live cells in the grid.
+The density value must be an integer between 1 (calm) and 1000 (chaotic).
+.SH USAGE
+While the program is running, input is non\-blocking (you do not need to press
+ENTER). The following keys are recognized for control:
+.SS Keyboard Commands
+.TP
+.B q
+Immediately exits the application and restores the terminal.
+.TP
+.B space
+Toggles the simulation state between RUNNING and PAUSED.
+.TP
+.B s
+Advances the simulation by exactly one generation. This command is only effective
+when the simulation is in the PAUSED state.
+.SH SEE ALSO
+.BR ncurses (3),
+.BR make (1)
