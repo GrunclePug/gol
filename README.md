@@ -104,14 +104,15 @@ All default settings, including the Growth and Decay rule sets and their cycle t
   cp config.def.h config.h
   ```
 2.  Edit `config.h` to customize the values. Key customizable variables include:
-  | Variable | Description | Default |
-  | :--- | :--- | :--- |
-  | `DEFAULT_DENSITY` | Initial cell density factor (1-1000) for random world seeding. | `2` |
-  | `DEFAULT_SPEED_MS` | Delay between generations in milliseconds. | `50` |
-  | `MIN_THRESHOLD` | Density (%) to trigger the switch to the **Growth** rule set. | `5` |
-  | `MAX_THRESHOLD` | Density (%) to trigger the switch to the **Decay** rule set. | `34` |
-  | `RULE_GROWTH_B/S` | Birth/Survival array for the Growth phase. | `B36/S236` |
-  | `RULE_DECAY_B/S` | Birth/Survival array for the Decay phase. | `B3/S23` |
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `DEFAULT_DENSITY` | Initial cell density factor (1-1000) for random world seeding. | `2` |
+| `DEFAULT_SPEED_MS` | Delay between generations in milliseconds. | `50` |
+| `MIN_THRESHOLD` | Density (%) to trigger the switch to the **Growth** rule set. | `5` |
+| `MAX_THRESHOLD` | Density (%) to trigger the switch to the **Decay** rule set. | `34` |
+| `RULE_GROWTH_B/S` | Birth/Survival array for the Growth phase. | `B36/S236` |
+| `RULE_DECAY_B/S` | Birth/Survival array for the Decay phase. | `B3/S23` |
 
   Note on Rules: The rule arrays use an index for the neighbor count (0-8) and a value of 1 for the rule to apply or 0 to ignore. For example, B36 is represented by {0, 0, 0, 1, 0, 0, 1, 0, 0}.
 3.  Recompile the project:
