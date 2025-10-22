@@ -1,12 +1,22 @@
-# GoL Ncurses TUI
+# GoL Ncurses TUI (Cellular Automata)
 
-A classic implementation of Conway's Game of Life (GoL) as a Terminal User Interface (TUI), written in C and utilizing the ncurses library.
+A high-performance, self-managing **Terminal User Interface (TUI)** for running **C/A (Cellular Automata)** simulations, written in C and utilizing the ncurses library.
 
 ---
 
 ## Overview
 
-GoL Ncurses TUI is a simple, high-performance simulation designed to run directly in your terminal. It leverages the **ncurses library** to provide a dynamic, responsive grid and a status bar, showcasing efficient memory management and classic C programming structure. The simulation features toroidal (wrapping) boundaries and various seeding patterns.
+This Cellular Automata Ncurses TUI has evolved beyond a simple Game of Life (GoL) implementation. The 0.2.0 release introduces a **dynamic, cyclic rule system** that allows the simulation to manage its own cell density.
+
+The core concept is a continuous cycle between two configurable rule sets: **Growth** and **Decay**.
+
+* It starts with a low-density, randomly scattered world.
+* The **Growth** rule set is applied until the cell density reaches a configurable **Maximum Threshold**.
+* It then automatically switches to the **Decay** rule set.
+* The **Decay** rule set is applied until the cell density drops to a configurable **Minimum Threshold**.
+* The cycle repeats, ensuring the world remains dynamic and prevents complete stagnation or complete overgrowth.
+
+This leverages the **ncurses library** for a responsive grid and status bar, showcasing efficient memory management and classic C programming structure. The simulation features toroidal (wrapping) boundaries.
 
 ---
 
@@ -18,6 +28,11 @@ GoL Ncurses TUI is a simple, high-performance simulation designed to run directl
 * **Pattern Seeding:** Seeds the world with various stable and chaotic starting patterns (e.g., Glider, R-Pentomino).
 * **Dynamic Resizing:** Supports terminal resizing on the fly (`KEY_RESIZE`).
 * **Simple Controls:** Quit, Pause, and Step-by-Step generation advance.
+* **Dynamic Rule Cycling:** Automatically switches between a **Growth** and **Decay** rule set based on current cell density.
+  * **Default Growth Rule:** **B36/S236** (a high-density growth rule).
+  * **Default Decay Rule:** **B3/S23** (the classic GoL rule set, which tends toward equilibrium/decay in this context).
+* **Density Management:** Configurable **MIN\_THRESHOLD** and **MAX\_THRESHOLD** percentages dictate when the simulation cycles between rule sets.
+* **Rule Customization:** Rule sets (Growth/Decay) are fully customizable via the `config.h` file (using the standard **B/S notation**).
 
 ---
 
@@ -80,19 +95,25 @@ sudo make uninstall
 
 ---
 
-## Configuration
+## Configuration and Custom Rules
 
-Default settings (like speed, minimum terminal size, and keys) are defined in **`config.h`**.
+All default settings, including the Growth and Decay rule sets and their cycle thresholds, are defined in config.h.
 
 1.  Copy the default configuration (this is done by default on build if `config.h` doesn't exist):
   ```bash
   cp config.def.h config.h
   ```
-2.  Edit `config.h` to customize the values:
-  ```bash
-  # For example, to change the simulation speed:
-  #define DEFAULT_SPEED_MS 50
-  ```
+2.  Edit `config.h` to customize the values. Key customizable variables include:
+  | Variable | Description | Default |
+  | :--- | :--- | :--- |
+  | `DEFAULT_DENSITY` | Initial cell density factor (1-1000) for random world seeding. | `2` |
+  | `DEFAULT_SPEED_MS` | Delay between generations in milliseconds. | `50` |
+  | `MIN_THRESHOLD` | Density (%) to trigger the switch to the **Growth** rule set. | `5` |
+  | `MAX_THRESHOLD` | Density (%) to trigger the switch to the **Decay** rule set. | `34` |
+  | `RULE_GROWTH_B/S` | Birth/Survival array for the Growth phase. | `B36/S236` |
+  | `RULE_DECAY_B/S` | Birth/Survival array for the Decay phase. | `B3/S23` |
+
+  Note on Rules: The rule arrays use an index for the neighbor count (0-8) and a value of 1 for the rule to apply or 0 to ignore. For example, B36 is represented by {0, 0, 0, 1, 0, 0, 1, 0, 0}.
 3.  Recompile the project:
   ```bash
   make clean

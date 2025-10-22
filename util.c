@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "util.h"
 #include "config.h"
+#include "util.h"
 
 /* --- GoL Pattern Definitions --- */
 
@@ -99,6 +99,22 @@ static int count_neighbors(World_t *world, int r, int c) {
     return neighbors;
 }
 
+/* Helper function to get the current count of alive cells. */
+long get_alive_count(World_t *world) {
+    if (!world) return 0;
+
+    long alive_count = 0;
+    for (int r = 0; r < world->rows; r++) {
+        for (int c = 0; c < world->cols; c++) {
+            // Assuming 1 is 'alive'
+            if (world->current_grid[r][c] == 1) {
+                alive_count++;
+            }
+        }
+    }
+    return alive_count;
+}
+
 /* Allocates and initializes the World_t structure.
  * The grid is seeded randomly based on the provided density (0-1000). */
 World_t* world_init(int rows, int cols, int density) {
@@ -118,6 +134,14 @@ World_t* world_init(int rows, int cols, int density) {
         world->current_grid[i] = ecalloc(cols, sizeof(int));
         world->next_grid[i] = ecalloc(cols, sizeof(int));
     }
+
+    // Set initial rule to Growth
+    world->current_rule = &GROWTH_RULE;
+
+    // Pre-calculate Integer Thresholds
+    long total_cells = (long)rows * cols;
+    world->min_threshold_count = (long)total_cells * MIN_THRESHOLD / 100;
+    world->max_threshold_count = (long)total_cells * MAX_THRESHOLD / 100;
 
     if (seed_set == 0) {
             srand(time(NULL));
@@ -179,10 +203,13 @@ void world_resize(World_t *world, int new_rows, int new_cols) {
     free(world->next_grid);
 
     // Update World_t structure pointers and dimensions
+    long total_cells = (long)new_rows * new_cols;
     world->current_grid = new_current;
     world->next_grid = new_next;
     world->rows = new_rows;
     world->cols = new_cols;
+    world->min_threshold_count = (long)total_cells * MIN_THRESHOLD / 100;
+    world->max_threshold_count = (long)total_cells * MAX_THRESHOLD / 100;
 }
 
 /* Fills the world grid with random patterns based on the configured density. */
@@ -207,24 +234,28 @@ void world_seed_random(World_t *world, int density) {
 void world_update(World_t *world) {
     if (!world) return;
 
+    world->alive_cell_count = get_alive_count(world);
+
+    // Density-Dependent Rule Switching
+    if (world->current_rule == &GROWTH_RULE && world->alive_cell_count >= world->max_threshold_count) {
+        world->current_rule = &DECAY_RULE;
+    } else if (world->current_rule == &DECAY_RULE && world->alive_cell_count <= world->min_threshold_count) {
+        world->current_rule = &GROWTH_RULE;
+    }
+
+    // Generalized Cell Calculation
     for (int r = 0; r < world->rows; r++) {
         for (int c = 0; c < world->cols; c++) {
             int neighbors = count_neighbors(world, r, c);
             int current_state = world->current_grid[r][c];
-            int next_state = current_state; // Assume state remains the same
+            int next_state;
 
-            // -- CONWAY'S RULES --
             if (current_state == 1) {
-                // Rule 1: Underpopulation (Dies if < 2 neighbors)
-                // Rule 2: Overpopulation (Dies if > 3 neighbors)
-                if (neighbors < 2 || neighbors > 3) {
-                    next_state = 0; // Dies
-                }
+                // Check Survival Rule (S)
+                next_state = world->current_rule->survival_rule[neighbors];
             } else {
-                // Rule 4: Reproduction (Becomes alive if exactly 3 neighbors)
-                if (neighbors == 3) {
-                    next_state = 1; // Becomes alive
-                }
+                // Check Birth Rule (B)
+                next_state = world->current_rule->birth_rule[neighbors];
             }
 
             world->next_grid[r][c] = next_state;

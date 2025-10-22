@@ -40,8 +40,8 @@ void drw_status(World_t *world) {
     char status_bar[COLS];
 
     // snprintf is used to safely format the string without buffer overflow
-    int len = snprintf(status_bar, COLS, " G: %-10ld | %-8s | Q: %c, P: %c, S: %c ",
-        world->generation, state, KEY_QUIT, KEY_PAUSE, KEY_STEP);
+    int len = snprintf(status_bar, COLS, "R: %-19s | D: %ld [%ld/%ld] | G: %-10ld | %-8s | Q: %c, P: %c, S: %c ",
+        world->current_rule->rule_name, world->alive_cell_count, world->min_threshold_count, world->max_threshold_count, world->generation, state, KEY_QUIT, KEY_PAUSE, KEY_STEP);
 
     // Ensure status bar is padded with spaces to clear the old content
     if (len < COLS) {

@@ -1,22 +1,31 @@
 .TH GOL 1 gol\-VERSION
 .SH NAME
-gol \- Conway's Game of Life TUI simulator
+gol \- Dynamic Cellular Automata TUI simulator
 .SH SYNOPSIS
 .B gol
 .RB [ \fIdensity\fR ]
 .SH DESCRIPTION
 .B gol
-is a simple, fast, and terminal\-based implementation of Conway's Game of Life.
+is a fast, terminal\-based **Cellular Automata (CA)** simulator that dynamically cycles
+between two configured rule sets: Growth (\fBB36/S236\fR by default) and Decay
+(\fBB3/S23\fR by default).
+.P
+The program monitors the live cell density and automatically switches rule sets
+when the density passes configurable high or low thresholds (MIN\_THRESHOLD and
+MAX\_THRESHOLD in \fBconfig.h\fR), ensuring the simulation remains active.
+.P
 It uses the ncurses library to display the cellular automaton grid and runs the
 simulation logic in an infinite loop until explicitly quit.
 .P
-The program displays the grid of cells, the current generation count, and the
-simulation state (RUNNING or PAUSED) in a status bar at the bottom of the terminal.
+The program displays the grid of cells, the current rule set, the density
+percentage, and the simulation state (RUNNING or PAUSED) in a status bar at the
+bottom of the terminal.
 .SH ARGUMENTS
 .TP
 \fIdensity\fR
-An optional argument that sets the initial density of live cells in the grid.
-The density value must be an integer between 1 (calm) and 1000 (chaotic).
+An optional argument that sets the initial random seeding chance of live cells in the grid.
+The value is an integer between **1 (low density)** and **1000 (high density)**.
+The default value is 2.
 .SH USAGE
 While the program is running, input is non\-blocking (you do not need to press
 ENTER). The following keys are recognized for control:

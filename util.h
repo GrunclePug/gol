@@ -9,6 +9,15 @@
 
 /* --- Data Structs --- */
 /*
+ * Rule_t defines the birth and survival rules for cells in the simulation.
+ */
+typedef struct {
+    const char *rule_name;
+    const int *birth_rule;
+    const int *survival_rule;
+} Rule_t;
+
+/*
  * World_t holds the entire state of the Game of Life simulation.
  * It uses two grids (current and next) to calculate the state updates without
  * interfering with the current generation.
@@ -20,6 +29,10 @@ typedef struct {
     int **next_grid; // The temporary grid for calculating the next state
     bool is_running;
     long generation;
+    long alive_cell_count;
+    long min_threshold_count; // The actual cell count for MIN_THRESHOLD (%)
+    long max_threshold_count; // The actual cell count for MAX_THRESHOLD (%)
+    const Rule_t *current_rule;
 } World_t;
 
 /*
